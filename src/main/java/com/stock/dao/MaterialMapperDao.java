@@ -37,4 +37,20 @@ public class MaterialMapperDao {
     public  int installCom(@Param("pId") String pId, @Param("pName") String pName, @Param("pClass") String pClass){
         return mapper.installCom(pId,pName,pClass);
     }
+
+    public List<LinkedHashMap<String, Object>> getPro(@Param("one") String one, @Param("two") String two){
+        return mapper.getPro(one,two);
+    }
+
+    public List<LinkedHashMap<String, Object>> getProP(@Param("one") String one, @Param("two") String two){
+        return mapper.getProP(one,two);
+    }
+
+    public List<LinkedHashMap<String, Object>> getProI(@Param("one") String one, @Param("two") String two){
+        return mapper.getProI(one,two);
+    }
+
+
+
+
 }

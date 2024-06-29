@@ -1,5 +1,6 @@
 package com.stock.view;
 
+import com.stock.dao.MaterialMapperDao;
 import com.stock.util.Mysqld;
 import com.stock.util.Table;
 import com.stock.util.Tools;
@@ -10,6 +11,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ShowDade {
 
@@ -95,15 +98,11 @@ public class ShowDade {
 					JS1.setBounds(0, 0, 817, 429);
 					panel_2.add(JS1);
 					//格式2021 -5-6
-					String da[]= {
-							
-							textField.getText(),
-							textField_1.getText()
-					};
-					ResultSet rs = Mysqld.QueryData("getPro ?,?  ", da);
-					
-					Tools.addDataTable(rs, model1, 6);
-					
+
+					//ResultSet rs = Mysqld.QueryData("getPro ?,?  ", da);
+					List<LinkedHashMap<String, Object>> res = new MaterialMapperDao().getPro(textField.getText(),
+							textField_1.getText());
+					EasyCode.showAllData(res,model1);
 					
 				}
 				
@@ -142,14 +141,15 @@ public class ShowDade {
 					JS1.setBounds(0, 0, 817, 429);
 					panel_2.add(JS1);
 					//格式2021 -5-6
-					String da[]= {
-							
-							textField.getText(),
-							textField_1.getText()
-					};
-					ResultSet rs = Mysqld.QueryData("getProP ?,?  ", da);
+
+					//ResultSet rs = Mysqld.QueryData("getProP ?,?  ", da);
 					
-					Tools.addDataTable(rs, model1, 6);
+					//Tools.addDataTable(rs, model1, 6);
+
+
+					List<LinkedHashMap<String, Object>> res = new MaterialMapperDao().getProP(	textField.getText(),
+							textField_1.getText());
+					EasyCode.showAllData(res,model1);
 					
 					
 				}
@@ -177,14 +177,10 @@ public class ShowDade {
 					JS1.setBounds(0, 0, 817, 429);
 					panel_2.add(JS1);
 					//格式2021 -5-6
-					String da[]= {
-							
-							textField.getText(),
-							textField_1.getText()
-					};
-					ResultSet rs = Mysqld.QueryData("getProI ?,?  ", da);
-					
-					Tools.addDataTable(rs, model1, 6);
+
+					List<LinkedHashMap<String, Object>> res = new MaterialMapperDao().getProI(textField.getText(),
+							textField_1.getText());
+					EasyCode.showAllData(res,model1);
 					
 					
 				}
