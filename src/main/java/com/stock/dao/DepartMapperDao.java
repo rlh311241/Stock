@@ -10,21 +10,21 @@ import java.util.List;
 
 public class DepartMapperDao {
 
-    SqlSession sqlSession = MybatisUtils.getSqlSession();
-    DepartMapperMapper mapper = sqlSession.getMapper(DepartMapperMapper.class);
+
+    DepartMapperMapper mapper = MybatisUtils.sqlSession.getMapper(DepartMapperMapper.class);
 
 
-    List<SDepart> findAllDepart(){
+    public List<SDepart> findAllDepart(){
         return mapper.findAllDepart();
     }
 
 
-    SDepart findById(int id){
+    public SDepart findById(String id){
         return mapper.findById(id);
     }
 
    public  int insertDepart(String id){
-        return insertDepart(id);
+        return mapper.insertDepart(id);
     }
 
     public int updateDepart(SDepart depart){

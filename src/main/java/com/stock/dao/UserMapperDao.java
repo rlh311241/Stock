@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class UserMapperDao {
 
-    SqlSession sqlSession = MybatisUtils.getSqlSession();
-    UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+
+    UserMapper mapper = MybatisUtils.sqlSession.getMapper(UserMapper.class);
 
 
     /**

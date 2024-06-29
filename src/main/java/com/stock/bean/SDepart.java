@@ -3,25 +3,22 @@ package com.stock.bean;
 
 public class SDepart {
 
-  private long dId;
+  private String dId;
   private String dDepart;
 
   @Override
   public String toString() {
     return "SDepart{" +
-            "dId=" + dId +
+            "dId='" + dId + '\'' +
             ", dDepart='" + dDepart + '\'' +
             '}';
   }
 
-  public SDepart() {
-  }
-
-  public long getdId() {
+  public String getdId() {
     return dId;
   }
 
-  public void setdId(long dId) {
+  public void setdId(String dId) {
     this.dId = dId;
   }
 
@@ -33,26 +30,11 @@ public class SDepart {
     this.dDepart = dDepart;
   }
 
-  public SDepart(long dId, String dDepart) {
+  public SDepart() {
+  }
+
+  public SDepart(String dId, String dDepart) {
     this.dId = dId;
     this.dDepart = dDepart;
   }
-
-  public long getDId() {
-    return dId;
-  }
-
-  public void setDId(long dId) {
-    this.dId = dId;
-  }
-
-
-  public String getDDepart() {
-    return dDepart;
-  }
-
-  public void setDDepart(String dDepart) {
-    this.dDepart = dDepart;
-  }
-
 }

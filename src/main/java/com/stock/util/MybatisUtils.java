@@ -17,11 +17,13 @@ import java.sql.Connection;
 public class MybatisUtils {
     private static SqlSessionFactory sqlSessionFactory;
     private static Connection connection;
+    public static SqlSession sqlSession =null;
     static {
         try {
             String resource = "mybatis-config.xml";
             InputStream inputStream = Resources.getResourceAsStream(resource);
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSession = MybatisUtils.getSqlSession();
         } catch (IOException e) {
             e.printStackTrace();
         }

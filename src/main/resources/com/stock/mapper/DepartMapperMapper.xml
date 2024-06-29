@@ -5,19 +5,19 @@
 
 
     <resultMap id="BaseResultMap" type="SDepart">
-        <id property="dId" column="d_id" jdbcType="int"/>
+        <id property="dId" column="d_id" jdbcType="VARCHAR"/>
         <result property="dDepart" column="d_depart" jdbcType="VARCHAR"/>
     </resultMap>
 
 
     <!-- 查询所有部门 -->
-    <select id="findAllDepart" resultType="BaseResultMap">
+    <select id="findAllDepart" resultMap="BaseResultMap">
         SELECT * FROM s_depart
     </select>
 
     <!-- 根据ID查询部门 -->
-    <select id="findById" parameterType="string" resultType="SDepart">
-        SELECT * FROM s_depart WHERE d_id = #{dId}
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM s_depart WHERE d_id = #{id}
     </select>
 
     <!-- 添加部门 -->
@@ -32,7 +32,7 @@
 
     <!-- 删除部门 -->
     <delete id="deleteById" parameterType="java.lang.String">
-        DELETE FROM s_depart WHERE d_id = #{dId}
+        DELETE FROM s_depart WHERE d_id = #{id}
     </delete>
 
 </mapper>

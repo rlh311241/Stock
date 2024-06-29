@@ -2,6 +2,7 @@ package com.stock.view;
 
 
 
+import com.stock.bean.SDepart;
 import com.stock.dao.DepartMapperDao;
 import com.stock.util.Mysqld;
 import com.stock.util.Table;
@@ -12,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class Depart {
 
@@ -108,46 +110,77 @@ public class Depart {
 		btnNewButton_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				JTextField data[]= {
-						textField_2	
-				};
+
 				if(textField_2.getText().equals("")){
 					Tools.messageWindows("请输入部门ID");
+				}else{
+					int a=new DepartMapperDao().deleteById(textField_2.getText());
+					if(a>0){
+						Tools.messageWindows("删除成功");
+					}else{
+						Tools.messageWindows("删除失败");
+					}
 				}
-				int a=new DepartMapperDao().deleteById(textField_2.getText());
-				EasyCode.deleteDate(data, "DELETE FROM s_depart where d_id=?", 1, "请输入部门编码");
+
+				//EasyCode.deleteDate(data, "DELETE FROM s_depart where d_id=?", 1, "请输入部门编码");
 				
 			}
 		});
 		//更改
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JTextField data[]= {
-				
-						textField_1,
-						textField_2	
-				};
-				
-				EasyCode.upData(data, "UPDATE s_depart set d_depart=? where d_id=?", 2, "请输入部门编码");
+
+				if(textField_2.getText().equals("")){
+					Tools.messageWindows("请输入部门ID");
+				}
+				SDepart depart=new SDepart();
+				depart.setdId(textField_2.getText());
+				depart.setdDepart(textField_1.getText());
+				int a=new DepartMapperDao().updateDepart(depart);
+				if(a>0){
+					Tools.messageWindows("更改成功");
+				}else{
+					Tools.messageWindows("更改失败");
+				}
+				//EasyCode.upData(data, "UPDATE s_depart set d_depart=? where d_id=?", 2, "请输入部门编码");
 				
 			}		});
 		
 		btnNewButton_3_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				JTextField data[]= {
-						textField_2
-				};
-				JTextField data1[]= {
-						textField,
-						textField_1
-				};
+//				JTextField data[]= {
+//						textField_2
+//				};
+//				JTextField data1[]= {
+//						textField,
+//						textField_1
+//				};
+
+
+				List<SDepart> jg = new DepartMapperDao().findAllDepart();//查询结构
+
+
 				if(textField_2.getText().equals("")) {
-					
-					EasyCode.showAllData("select * from s_depart", 2, model);
+					model.setRowCount(0);
+					for (SDepart sDepart : jg) {
+						String datz[]=new String[2];
+						datz[0]=sDepart.getdId();
+						datz[1]=sDepart.getdDepart();
+						model.addRow(datz);
+					}
+					//EasyCode.showAllData("select * from s_depart", 2, model);
 				}else {
-					int dat[]= {1,2};
-					EasyCode.showOneData(data, data1, "select * from s_depart where d_id=?", 2, model, dat);
+					SDepart sDepart = new DepartMapperDao().findById(textField_2.getText());//查询结构
+					model.setRowCount(0);
+					if(sDepart!=null){
+
+						String datz[]=new String[2];
+						datz[0]=sDepart.getdId();
+						datz[1]=sDepart.getdDepart();
+						model.addRow(datz);
+					}
+
 				}
 			}
 		});
@@ -158,19 +191,11 @@ public class Depart {
 				if(textField_1.getText().equals("")) {
 					Tools.messageWindows("请输入部门名称");
 				}else {
-					
-					JTextField te[]= {
-							
-						
-							textField_1
-							
-					};
-				
-					String data[]= {
 
-							textField_1.getText()
-					};
-					int a= Mysqld.upDate("insert into s_depart(d_depart) VALUES(?)", data);
+
+					int a=new DepartMapperDao().insertDepart(textField_1.getText());
+
+					//int a= Mysqld.upDate("insert into s_depart(d_depart) VALUES(?)", data);
 					if(a==1) {
 						Tools.messageWindows("添加成功");
 					}else {
