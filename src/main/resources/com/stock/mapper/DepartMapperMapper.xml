@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stock.mapper.DepartMapperMapper">
+
+
+    <resultMap id="BaseResultMap" type="SDepart">
+        <id property="dId" column="d_id" jdbcType="VARCHAR"/>
+        <result property="dDepart" column="d_depart" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!-- 查询所有部门 -->
+    <select id="findAllDepart" resultMap="BaseResultMap">
+        SELECT * FROM s_depart
+    </select>
+
+    <!-- 根据ID查询部门 -->
+    <select id="findById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT * FROM s_depart WHERE d_id = #{id}
+    </select>
+
+    <!-- 添加部门 -->
+    <insert id="insertDepart" parameterType="java.lang.String">
+        INSERT INTO s_depart(d_depart) VALUES(#{dDepart})
+    </insert>
+
+    <!-- 更新部门信息 -->
+    <update id="updateDepart" parameterType="SDepart">
+        UPDATE s_depart SET d_depart = #{dDepart} WHERE d_id = #{dId}
+    </update>
+
+    <!-- 删除部门 -->
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM s_depart WHERE d_id = #{id}
+    </delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
