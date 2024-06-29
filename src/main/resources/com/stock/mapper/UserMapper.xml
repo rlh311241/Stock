@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stock.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="SAdmin">
+        <id property="sAccount" column="s_account" jdbcType="VARCHAR"/>
+        <result property="sPassword" column="s_password" jdbcType="VARCHAR"/>
+        <result property="sPow" column="s_pow" jdbcType="VARCHAR"/>
+        <result property="sName" column="s_name" jdbcType="VARCHAR"/>
+        <result property="dDepart" column="d_depart" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getUserByAccount" resultType="SAdmin">
+        SELECT       s_account AS sAccount,
+                     s_password AS sPassword,
+                     s_pow AS sPow,
+                     s_name AS sName,
+                     d_depart AS dDepart from s_admin where s_account=#{sAccount} and s_password=#{sPassword} and s_pow=#{sPow}
+    </select>
+
+
+
+    <insert id="insertSAdmin" parameterType="SAdmin">
+        INSERT INTO s_admin
+            (s_account, s_password, s_pow, s_name, d_depart)
+        VALUES
+            (#{sAccount}, #{sPassword}, #{sPow}, #{sName}, #{dDepart})
+    </insert>
+
+    <select id="getDepartAllList" resultType="java.util.Map">
+       select * from s_depart
+    </select>
+
+
+    <delete id="delUserById" parameterType="java.lang.String">
+        DELETE FROM s_admin where s_account=#{sAccount}
+    </delete>
+
+
+    <update id="updateAdmin" parameterType="Map">
+        UPDATE s_admin set s_account=#{sAccount},s_password=#{sPassword},s_name=#{sName},d_depart=#{dDepart} where s_account=#{sAccountW}
+    </update>
+
+
+    <select id="getUserByName" parameterType="Map" resultType="String">
+        SELECT s_account,s_name,d_depart from s_admin where s_account=?
+    </select>
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
