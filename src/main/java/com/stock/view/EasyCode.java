@@ -6,6 +6,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import com.stock.util.Mysqld;
 public class EasyCode {
 	
@@ -39,6 +43,40 @@ public class EasyCode {
 			Tools.addDataTable(rs, model, rowacount);
 		}
 	}
+
+
+	public static void showAllData(List<LinkedHashMap<String, Object>>  list, DefaultTableModel model) {
+
+		model.setRowCount(0);
+		for (LinkedHashMap<String, Object> map : list) {
+			List<String> valueList = new ArrayList<>();
+			for (Object value : map.values()) {
+				// 确保值是String类型再添加，避免类型不匹配的问题
+				valueList.add(value.toString());
+			}
+			String[] strArray = valueList.toArray(new String[0]);
+			model.addRow(strArray);
+		}
+	}
+
+	public static void showAllDataA(List<LinkedHashMap<String, String>>  list, DefaultTableModel model) {
+
+		model.setRowCount(0);
+		for (LinkedHashMap<String, String> map : list) {
+			List<String> valueList = new ArrayList<>();
+			for (Object value : map.values()) {
+				// 确保值是String类型再添加，避免类型不匹配的问题
+				valueList.add(value.toString());
+			}
+			String[] strArray = valueList.toArray(new String[0]);
+			model.addRow(strArray);
+		}
+
+	}
+
+
+
+
 		//
 		//查找全部管理
 		public static void showOneData(JTextField textField[],JTextField stextField[],String sql,int rowacount,DefaultTableModel model,int adt[]) {

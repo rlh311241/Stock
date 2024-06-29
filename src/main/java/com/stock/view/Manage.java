@@ -1,6 +1,8 @@
 package com.stock.view;
 
 import com.stock.bean.SAdmin;
+import com.stock.dao.AdminMapperDao;
+import com.stock.dao.CommodityMapperDao;
 import com.stock.dao.UserMapperDao;
 import com.stock.util.Mysqld;
 import com.stock.util.Table;
@@ -16,6 +18,7 @@ import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -242,36 +245,39 @@ public class Manage {
 				if(textField_2.getText().equals("")) {
 					//查找全部
 					//Tools.messageWindows("账号");
-	
-					EasyCode.showAllData("SELECT s_account,s_name,d_depart from s_admin", 3, model);
+					List<LinkedHashMap<String, Object>> list = new AdminMapperDao().getAllAdmins();
+					EasyCode.showAllData(list, model);
 				}else {
 					//查找单个
-				String data[]= {
-					textField_2.getText()
-				};
+//				String data[]= {
+//					textField_2.getText()
+//				};
 
-					ResultSet rs = Mysqld.QueryData("SELECT s_account,s_name,d_depart from s_admin where s_account=?",data);
-					Tools.addDataTable(rs, model, 3);
-					ResultSet rs1 = Mysqld.QueryData("SELECT *  from s_admin where s_account=?",data);
-					try {
-						String a="";
-						if(rs1.next()) {
-							textField.setText(rs1.getString(1));
-							passwordField.setText(rs1.getString(2));
-							textField_1.setText(rs1.getString(4));
-							a=rs1.getString(5);
-						}
-						for(int i=0;i<comboBox.getItemCount();i++) {
-							String c=(String )comboBox.getItemAt(i);
-							if(c.equals(a)) {
-								comboBox.setSelectedIndex(i);
-							}
-						}
-						
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					List<LinkedHashMap<String, Object>> rs = new AdminMapperDao().getAllAdmins(textField_2.getText());
+					EasyCode.showAllData(rs, model);
+
+
+
+//					ResultSet rs = Mysqld.QueryData("SELECT s_account,s_name,d_depart from s_admin where s_account=?",data);
+//					Tools.addDataTable(rs, model, 3);
+					//ResultSet rs1 = Mysqld.QueryData("SELECT *  from s_admin where s_account=?",data);
+
+
+					List<LinkedHashMap<String, Object>> rs1 = new AdminMapperDao().getAllAdminsA(textField_2.getText());
+					String a="";
+					for (LinkedHashMap<String, Object> z : rs1) {
+						textField.setText(Other.getEntryByIndexA(z,0).toString().split("=")[1]);
+						passwordField.setText(Other.getEntryByIndexA(z,1).toString().split("=")[1]);
+						textField_1.setText(Other.getEntryByIndexA(z,3).toString().split("=")[1]);
+						a=Other.getEntryByIndexA(z,4).toString().split("=")[1];
 					}
+					for(int i=0;i<comboBox.getItemCount();i++) {
+						String c=(String )comboBox.getItemAt(i);
+						if(c.equals(a)) {
+							comboBox.setSelectedIndex(i);
+						}
+					}
+
 					
 					
 				}
@@ -324,11 +330,10 @@ public class Manage {
 							
 					};
 				
-					String data[]= {
-							textField_3.getText(),
-							textField_4.getText()
-					};
-					int a=Mysqld.upDate("insert into s_stock VALUES(?,?)", data);
+
+					int a=new AdminMapperDao().insertStock(	textField_3.getText(),
+							textField_4.getText());
+					//int a=Mysqld.upDate("insert into s_stock VALUES(?,?)", data);
 					if(a==1) {
 						Tools.messageWindows("添加成功");
 					}else {
@@ -380,10 +385,19 @@ public class Manage {
 		btnNewButton_1_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				JTextField data[]= {
-						textField_5	
-				};
-				EasyCode.deleteDate(data, "DELETE FROM s_stock where c_id=?", 1, "请输入仓库编码");
+
+				if(textField_5.getText().equals("")) {
+					Tools.messageWindows("请输入仓库编码");
+				}else{
+					int a=new AdminMapperDao().delStock(textField_5.getText());
+					if(a==1) {
+						Tools.messageWindows("删除成功");
+					}else{
+						Tools.messageWindows("删除失败");
+					}
+				}
+
+				//EasyCode.deleteDate(data, "DELETE FROM s_stock where c_id=?", 1, "请输入仓库编码");
 				
 			}
 		});
@@ -393,12 +407,27 @@ public class Manage {
 		btnNewButton_2_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JTextField data[]= {
-						textField_3,
-						textField_4,
-						textField_5	
+
 				};
-				
-				EasyCode.upData(data, "UPDATE s_stock set c_id=? ,c_name=? where c_id=?", 3, "请输入仓库编码");
+				if(textField_3.getText().equals("")) {
+					Tools.messageWindows("请输入仓库编码");
+				}else if(textField_4.getText().equals("")) {
+					Tools.messageWindows("请输入仓库名称");
+				}else if(textField_5.getText().equals("")) {
+					Tools.messageWindows("请输入条件仓库编号");
+				}else{
+					int a=new AdminMapperDao().updateStock(textField_3.getText(),
+							textField_4.getText(),
+							textField_5.getText()	);
+					if(a==1) {
+						Tools.messageWindows("更改成功");
+					}else{
+						Tools.messageWindows("更改失败");
+					}
+				}
+
+
+				//EasyCode.upData(data, "UPDATE s_stock set c_id=? ,c_name=? where c_id=?", 3, "请输入仓库编码");
 			}
 		});
 		panel_4_1_1.add(btnNewButton_2_1);
@@ -418,19 +447,25 @@ public class Manage {
 		btnNewButton_3_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				JTextField data[]= {
-						textField_5	
-				};
-				JTextField data1[]= {
-						textField_3,
-						textField_4
-				};
+
 				if(textField_5.getText().equals("")) {
-					
-					EasyCode.showAllData("select * from s_stock", 2, model1);
+					List<LinkedHashMap<String, String>> list = new CommodityMapperDao().selectAllStock();
+
+					EasyCode.showAllDataA(list,model1);
+					//EasyCode.showAllData("select * from s_stock", 2, model1);
 				}else {
 					int dat[]= {1,2};
-					EasyCode.showOneData(data, data1, "select * from s_stock where c_id=?", 2, model1, dat);
+					LinkedHashMap<String, Object> ls = new AdminMapperDao().getStock(textField_5.getText());
+
+					String ac=Other.getEntryByIndexA(ls,0).toString().split("=")[1];
+					textField_3.setText(ac);
+					String acc=Other.getEntryByIndexA(ls,1).toString().split("=")[1];
+					textField_4.setText(acc);
+
+					model1.setRowCount(0);
+					String d[]={ac,acc};
+					model1.addRow(d);
+					//EasyCode.showOneData(data, data1, "select * from s_stock where c_id=?", 2, model1, dat);
 				}
 			}
 		});

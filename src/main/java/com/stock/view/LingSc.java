@@ -224,7 +224,6 @@ public class LingSc {
 				//查询，所有仓库  的各种物料数量
 				//A仓库  的B物料
 				//A仓库  的C物料
-				
 				String d[]= {
 					account
 				};
