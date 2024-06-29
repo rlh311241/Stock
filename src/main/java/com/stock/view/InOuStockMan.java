@@ -1,5 +1,6 @@
 package com.stock.view;
 
+import com.stock.dao.CommodityMapperDao;
 import com.stock.util.Table;
 import com.stock.util.Tools;
 
@@ -12,6 +13,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.stock.util.Mysqld;
 public class InOuStockMan {
 
@@ -58,9 +63,11 @@ public class InOuStockMan {
 		panel_4_2.add(comboBox);
 		
 		//添加商品s
-		
-		stock= Other.setCom("select * from s_commodity", comboBox, 1,stock);
-		
+		List<LinkedHashMap<String, String>> comodList = new CommodityMapperDao().selectAllCommodity();
+		stock= Other.setCom(comodList, comboBox, stock);
+
+
+
 		JLabel lblNewLabel_2_1 = new JLabel("仓库编号");
 		panel_4_2.add(lblNewLabel_2_1);
 		
@@ -68,12 +75,12 @@ public class InOuStockMan {
 		
 		JComboBox comboBox_1 = new JComboBox();
 		panel_4_2.add(comboBox_1);
-		
-		stock1= Other.setCom("select * from s_stock", comboBox_1, 1,stock1);
-	
-		
 
-		
+
+		List<LinkedHashMap<String, String>> stockList = new CommodityMapperDao().selectAllStock();
+		stock1= Other.setCom(stockList, comboBox_1, stock1);
+
+
 		JLabel lblNewLabel = new JLabel("商品数量");
 		panel_4_2.add(lblNewLabel);
 		
@@ -110,20 +117,19 @@ public class InOuStockMan {
 					
 					return;
 				}
-				String date[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()],
-						textField_3.getText(),
-						"入库"
-						
-						
-				};
-				int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
-				if(a==1) {
-					Tools.messageWindows("入库成功");
-				}else {
-					Tools.messageWindows("入库失败");
-				}
+
+
+			int a=new CommodityMapperDao().addRecord(stock[comboBox.getSelectedIndex()],
+					stock1[comboBox_1.getSelectedIndex()],
+					textField_3.getText(),
+					"入库"
+			);
+			//int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
+			if(a==1) {
+				Tools.messageWindows("入库成功");
+			}else {
+				Tools.messageWindows("入库失败");
+			}
 				
 				
 				
@@ -136,51 +142,45 @@ public class InOuStockMan {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-	if(textField_3.getText().equals("")) {
-					
-					return;
-				}
+	     if(textField_3.getText().equals("")) {
+			 return;
+		 }
 				
-				String date[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()],
-						textField_3.getText(),
-						"出库"
-						
-						
-				};
+
 				//出库之前看看库存够不够
-				String da[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()],	
-				};
-				ResultSet s1 = Mysqld.QueryData("select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='入库' group by p_id", da);
-				ResultSet s2 = Mysqld.QueryData("SELECT  ISNULL((select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='出库' group by p_id), 0)", da);
+
+				List<LinkedHashMap<String, Object>> jg1 = new CommodityMapperDao().getStock(stock[comboBox.getSelectedIndex()], stock1[comboBox_1.getSelectedIndex()]);
+				List<LinkedHashMap<String, Object>> jg11 = new CommodityMapperDao().getStockOne(stock[comboBox.getSelectedIndex()], stock1[comboBox_1.getSelectedIndex()]);
+
+				//ResultSet s1 = Mysqld.QueryData("select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='入库' group by p_id", da);
+				//ResultSet s2 = Mysqld.QueryData("SELECT  ISNULL((select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='出库' group by p_id), 0)", da);
 				
-				try {
+
 					
 				int sum=0;
-				if(s1.next()) {
-					if(s2.next()) {
-						int in=s1.getInt(1);
-						int out=s2.getInt(1);
+				if(jg1.size()>0) {
+					if(jg11.size()>0) {
+
+						String aac =jg1.get(0).get("a").toString();
+						int in=Integer.valueOf(aac);
+						aac = jg11.get(0).get("a").toString();
+						int out=Integer.valueOf(aac);
 						sum=in-out;
-						s1.close();
-						s2.close();
+
 					}
 				}
-					
-					
-				
-					
-					
-					
+
 					sum=sum-Integer.parseInt(textField_3.getText());
 					if(sum<0) {
 						Tools.messageWindows("库存不足");
 					}else {
-						
-						int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
+
+						int a=new CommodityMapperDao().addRecord(stock[comboBox.getSelectedIndex()],
+								stock1[comboBox_1.getSelectedIndex()],
+								textField_3.getText(),
+								"出库"
+								);
+						//int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
 						if(a==1) {
 							Tools.messageWindows("出库成功");
 						}else {
@@ -190,22 +190,6 @@ public class InOuStockMan {
 						
 						
 					}
-					
-					
-					
-					
-					
-					
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
-				
-				
-			
-				
-				
 				
 			}
 		});
@@ -236,7 +220,11 @@ public class InOuStockMan {
 		
 		JComboBox comboBox_2 = new JComboBox();
 		panel.add(comboBox_2);
-		stock2= Other.setCom("select * from s_stock", comboBox_2, 1,stock2);
+
+
+		List<LinkedHashMap<String, String>> stockList1 = new CommodityMapperDao().selectAllStock();
+		stock2= Other.setCom(stockList1, comboBox_2, stock2);
+		//stock2= Other.setCom("select * from s_stock", comboBox_2, 1,stock2);
 		
 		
 		
@@ -252,62 +240,43 @@ public class InOuStockMan {
 				//A 仓库 50   B仓库   10
 				//60
 				//查询当前库存 
-				String data[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()]	
-						
-				};
-				
-				ResultSet rs2 = Mysqld.QueryData("ShowCount ?,?", data);
-				try {
+
+
+				List<LinkedHashMap<String, String>> list = new CommodityMapperDao().getCount(stock[comboBox.getSelectedIndex()], stock1[comboBox_1.getSelectedIndex()]);
+
+				//ResultSet rs2 = Mysqld.QueryData("ShowCount ?,?", data);
 					int a;
 					int c=0;
-					while(rs2.next()) {
-						
-						a=rs2.getInt(1);
-						int b=Integer.parseInt(textField_3.getText());
-						if(a-b>=0) {
+					for (Map<String, String> stringObjectMap : list) {
+						String aa = Other.getEntryByIndex(stringObjectMap, 0).toString();
+						aa = aa.split("=")[1];
+						a = Integer.parseInt(aa);
+						int b = Integer.parseInt(textField_3.getText());
+						if (a - b >= 0) {
 							//可以进行出库
-							c=1;
-							
-							String date[]= {
-									stock[comboBox.getSelectedIndex()],
+							c = 1;
+
+
+							a = new CommodityMapperDao().addRecord(stock[comboBox.getSelectedIndex()],
 									stock1[comboBox_1.getSelectedIndex()],
 									textField_3.getText(),
-									"出库"
-									
-									
-							};
-							
-							
-							
-							String date11[]= {
-									stock[comboBox.getSelectedIndex()],
+									"出库");
+							a = new CommodityMapperDao().addRecord(stock[comboBox.getSelectedIndex()],
 									stock2[comboBox_2.getSelectedIndex()],
 									textField_3.getText(),
-									"入库"
-									
-									
-							};
-							
-							a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
-							a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date11);
-							if(a==1) {
+									"入库");
+							if (a == 1) {
 								Tools.messageWindows("转仓成功");
-							}else {
+							} else {
 								Tools.messageWindows("转仓失败");
 							}
-							
 						}
+
+						if (c == 0) {
+							Tools.messageWindows("转仓失败");
+						}
+
 					}
-					if(c==0) {
-						Tools.messageWindows("转仓失败");
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
 				
 				
 			}
@@ -316,56 +285,45 @@ public class InOuStockMan {
 		
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				//查询，所有仓库  的各种物料数量
 				//A仓库  的B物料
 				//A仓库  的C物料
-				
-				
-				
-				ResultSet rs = Mysqld.QueryData("SELECT * from s_stock", null);
-				
-				
-				try {
-					model.setRowCount(0);
-					while(rs.next()) {
-						
-					
-						ResultSet rs1 = Mysqld.QueryData("SELECT * from s_commodity", null);
-						while(rs1.next()) {
-							String dataa[]=new String[3];
-							dataa[0]=rs.getString(2);
-							String d[]= {
-									rs1.getString(1),
-									rs.getString(1)
-									
-									
-							};
-							
-							
-							dataa[1]=rs1.getString(2);
-							ResultSet rs2 = Mysqld.QueryData("ShowCount ?,?", d);
-							if(rs2.next()) {
-								dataa[2]=rs2.getString(1);
-								model.addRow(dataa);
-				
-								
-							}
-							rs2.close();
-							
+
+
+				List<LinkedHashMap<String, String>> rs = new CommodityMapperDao().selectAllStock();
+				model.setRowCount(0);
+
+				for (Map<String, String> r : rs) {
+
+					List<LinkedHashMap<String, String>> rs1 = new CommodityMapperDao().selectAllCommodity();
+					for (Map<String, String> r1 : rs1) {
+						String dataa[]=new String[3];
+						dataa[0]= Other.getEntryByIndex(r, 1).toString().split("=")[1];
+
+						String rr1=Other.getEntryByIndex(r1, 0).toString().split("=")[1];
+						String rr0 =Other.getEntryByIndex(r, 0).toString().split("=")[1];
+						dataa[1]=Other.getEntryByIndex(r1, 1).toString().split("=")[1];
+
+
+						List<LinkedHashMap<String, String>> r2 = new CommodityMapperDao().getCount(rr1, rr0);
+						for (Map<String, String> stringStringMap : r2) {
+							dataa[2]=Other.getEntryByIndex(stringStringMap,0).toString().split("=")[1];
+							model.addRow(dataa);
 						}
-						rs1.close();
-						
+
 					}
-					rs.close();
-					
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
 				}
-				
-				
-				
+
+
+
+				//ResultSet rs = Mysqld.QueryData("SELECT * from s_stock", null);
+
+
+
+
+
+
 			}
 		});
 		

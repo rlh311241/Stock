@@ -9,46 +9,8 @@ import java.sql.SQLException;
 import com.stock.util.Mysqld;
 public class EasyCode {
 	
-	//使用登录
-	public static int isLogin(String sql,String data[]) {
-	    ResultSet rs = Mysqld.QueryData(sql, data);
-	    if(rs==null) {
-	    	return 0;
-	    }else {
-	    	
-	    	try {
-				if(rs.next()) {
-					return 1;
-				}else {
-					return 0;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return 0;
-			}
-	    }
-		
-		
-	}
-	//执行插入数据
-	public static void insertData(JTextField textField[],String sql,int j,String mes) {
-		String data[]=new String[textField.length];
-		for(int i=0;i<textField.length;i++) {
-			data[i]=textField[i].getText();
-		}
-		if(textField[j-1].getText().equals("")) {
-			Tools.messageWindows(mes);
-		}else {
-			int a=Mysqld.upDate(sql, data);
-			if(a==1) {
-				Tools.messageWindows("添加成功");
-			}else {
-				Tools.messageWindows("添加失败");
-			}
-		}
-	
-	}
+
+
 	//删除管理
 	public static void deleteDate(JTextField textField[],String sql,int j,String mes) {
 		String data[]=new String[textField.length];

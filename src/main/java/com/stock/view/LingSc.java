@@ -1,5 +1,6 @@
 package com.stock.view;
 
+import com.stock.dao.CommodityMapperDao;
 import com.stock.util.Table;
 import com.stock.util.Tools;
 import com.stock.util.Mysqld;
@@ -12,6 +13,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LingSc {
 
@@ -59,8 +63,10 @@ public class LingSc {
 		panel_4_2.add(comboBox);
 		
 		//添加商品s
-		
-		stock= Other.setCom("select * from s_commodity", comboBox, 1,stock);
+
+		List<LinkedHashMap<String, String>> stockList1 = new CommodityMapperDao().selectAllCommodity();
+		stock= Other.setCom(stockList1, comboBox, stock);
+		//stock= Other.setCom("select * from s_commodity", comboBox, 1,stock);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("仓库编号");
 		panel_4_2.add(lblNewLabel_2_1);
@@ -70,8 +76,9 @@ public class LingSc {
 		JComboBox comboBox_1 = new JComboBox();
 		panel_4_2.add(comboBox_1);
 		
-		stock1= Other.setCom("select * from s_stock", comboBox_1, 1,stock1);
-	
+		//stock1= Other.setCom("select * from s_stock", comboBox_1, 1,stock1);
+		List<LinkedHashMap<String, String>> stockList = new CommodityMapperDao().selectAllStock();
+		stock1= Other.setCom(stockList, comboBox, stock1);
 		
 
 		
