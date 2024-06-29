@@ -44,6 +44,19 @@ public class Other {
 			return null;
 		}
 	}
+
+	public static Map.Entry<String, Object> getEntryByIndexA(Map<String,Object> map, int index) {
+
+
+		List<Map.Entry<String, Object>> entries = new ArrayList<>(map.entrySet());
+
+		if (index >= 0 && index < entries.size()) {
+			return entries.get(index);
+		} else {
+			System.out.println("序号超出Map的大小。");
+			return null;
+		}
+	}
 	public static String[] setCom(List<LinkedHashMap<String, String>> list, JComboBox com, String stock[]) {
 
 		com.removeAllItems();

@@ -13,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class LingSc {
 		
 		//stock1= Other.setCom("select * from s_stock", comboBox_1, 1,stock1);
 		List<LinkedHashMap<String, String>> stockList = new CommodityMapperDao().selectAllStock();
-		stock1= Other.setCom(stockList, comboBox, stock1);
+		stock1= Other.setCom(stockList, comboBox_1, stock1);
 		
 
 		
@@ -109,34 +110,46 @@ public class LingSc {
 					return;
 				}
 				
-				String date[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()],
-						textField_3.getText(),
-						"出库"
-						
-						
-				};
+//				String date[]= {
+//						stock[comboBox.getSelectedIndex()],
+//						stock1[comboBox_1.getSelectedIndex()],
+//						textField_3.getText(),
+//						"出库"
+//
+//
+//				};
 				//出库之前看看库存够不够
-				String da[]= {
-						stock[comboBox.getSelectedIndex()],
-						stock1[comboBox_1.getSelectedIndex()],	
-				};
-				ResultSet s1 = Mysqld.QueryData("select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='入库' group by p_id", da);
-				ResultSet s2 = Mysqld.QueryData("SELECT  ISNULL((select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='出库' group by p_id), 0)", da);
+//				String da[]= {
+//						stock[comboBox.getSelectedIndex()],
+//						stock1[comboBox_1.getSelectedIndex()],
+//				};
+				List<LinkedHashMap<String, Object>> s1 = new CommodityMapperDao().getStock(stock[comboBox.getSelectedIndex()],
+						stock1[comboBox_1.getSelectedIndex()]);
+
+				List<LinkedHashMap<String, Object>> s2 = new CommodityMapperDao().getStockOne(stock[comboBox.getSelectedIndex()],
+						stock1[comboBox_1.getSelectedIndex()]);
+
+				//ResultSet s1 = Mysqld.QueryData("select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='入库' group by p_id", da);
+				//ResultSet s2 = Mysqld.QueryData("SELECT  ISNULL((select sum(a_number) from s_rcode where p_id=? and c_id=? and a_type='出库' group by p_id), 0)", da);
 				
-				try {
-					
+
 				int sum=0;
-				if(s1.next()) {
-					if(s2.next()) {
-						int in=s1.getInt(1);
-						int out=s2.getInt(1);
+				for (LinkedHashMap<String, Object> s11 : s1) {
+					for (LinkedHashMap<String, Object> s22 : s2) {
+						int in=Integer.valueOf(Other.getEntryByIndexA(s11,0).toString().split("=")[1]);
+						int out=Integer.valueOf(Other.getEntryByIndexA(s22,0).toString().split("=")[1]);
 						sum=in-out;
-						s1.close();
-						s2.close();
 					}
 				}
+//				if(s1.next()) {
+//					if(s2.next()) {
+//						int in=s1.getInt(1);
+//						int out=s2.getInt(1);
+//						sum=in-out;
+//						s1.close();
+//						s2.close();
+//					}
+//				}
 					
 					
 				
@@ -147,21 +160,25 @@ public class LingSc {
 					if(sum<0) {
 						Tools.messageWindows("库存不足");
 					}else {
-						
-						int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
+
+						int a=new CommodityMapperDao().addRecord(	stock[comboBox.getSelectedIndex()],
+								stock1[comboBox_1.getSelectedIndex()],
+								textField_3.getText(),
+								"出库");
+						//int a=Mysqld.upDate("insert into s_rcode (p_id,c_id,a_number,a_type) VALUES(?,?,?,?)", date);
 						if(a==1) {
 							
-							String date1[]= {
-									stock[comboBox.getSelectedIndex()],
+//							String date1[]= {
+//									stock[comboBox.getSelectedIndex()],
+//									account,
+//									textField_3.getText(),
+//
+//							};
+							
+							a=new CommodityMapperDao().getWl(stock[comboBox.getSelectedIndex()],
 									account,
-									textField_3.getText(),
-						
-									
-									
-							};
-							
-							
-							a=Mysqld.upDate("insert into s_lrcode(p_id,s_account,a_number) VALUES (?,?,?)", date1);
+									textField_3.getText());
+							//a=Mysqld.upDate("insert into s_lrcode(p_id,s_account,a_number) VALUES (?,?,?)", date1);
 							Tools.messageWindows("领取成功");
 						}else {
 							Tools.messageWindows("领取失败");
@@ -175,11 +192,7 @@ public class LingSc {
 					
 					
 					
-					
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
 			
 				
 				
@@ -215,11 +228,23 @@ public class LingSc {
 				String d[]= {
 					account
 				};
-				ResultSet rs2 = Mysqld.QueryData("select s_commodity.p_name, s_commodity.p_class,s_lrcode.a_number, s_lrcode.a_date  from s_lrcode,s_commodity where s_lrcode.p_id=s_commodity.p_id and s_lrcode.s_account=?", d);
-				if(rs2==null) {
+				List<LinkedHashMap<String, Object>> rs2 = new CommodityMapperDao().getCommodity(account);
+
+				//ResultSet rs2 = Mysqld.QueryData("select s_commodity.p_name, s_commodity.p_class,s_lrcode.a_number, s_lrcode.a_date  from s_lrcode,s_commodity where s_lrcode.p_id=s_commodity.p_id and s_lrcode.s_account=?", d);
+				if(rs2==null||rs2.size()==0) {
 					
 				}else {
-					Tools.addDataTable(rs2, model, 4);
+					model.setRowCount(0);
+					for (LinkedHashMap<String, Object> map : rs2) {
+						List<String> valueList = new ArrayList<>();
+						for (Object value : map.values()) {
+							// 确保值是String类型再添加，避免类型不匹配的问题
+							valueList.add(value.toString());
+						}
+						String[] strArray = valueList.toArray(new String[0]);
+						model.addRow(strArray);
+					}
+					//Tools.addDataTable(rs2, model, 4);
 				}
 				
 				
